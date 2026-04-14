@@ -11,7 +11,7 @@ import 'package:flutter/services.dart';
 import '../models/models.dart';
 import 'package:flutter/widgets.dart';
 
-// â”€â”€ Landmark data model â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  Landmark data model â””””””””””””””””””””””””””””””””””””””””””””””””””””€
 class ToothLandmarkData {
   /// True when a face was detected in the frame
   final bool faceDetected;
@@ -215,7 +215,7 @@ class ToothLandmarkData {
       _pointsCoverFit(lowerLipOuterX, lowerLipOuterY, viewSize, imageSize);
 }
 
-// â”€â”€ MediaPipe Service â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  MediaPipe Service â””””””””””””””””””””””””””””””””””””””””””””””””””””””€
 class MediaPipeService {
   static const MethodChannel _method =
       MethodChannel('com.dentalogic/ar_control');

@@ -1,18 +1,17 @@
 ﻿// lib/screens/ar_screen.dart
 //
 // Production AR Smile Previewer
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // REAL architecture:
 //   1. Flutter camera package feeds frames to native Android via MethodChannel
 //   2. Native MediaPipe FaceLandmarker detects 478 face landmarks per frame
 //   3. Native extracts tooth-region landmark coordinates and sends via EventChannel
 //   4. Flutter receives normalized coordinates and paints overlays anchored
-//      to the ACTUAL detected tooth positions â€” not fixed screen positions
+//      to the ACTUAL detected tooth positions  not fixed screen positions
 //
 // Requirements:
-//   â€¢ Download face_landmarker.task from MediaPipe and place in assets/models/
-//   â€¢ URL: https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task
-//   â€¢ AndroidManifest.xml must have CAMERA permission (see android/app/src/main/AndroidManifest.xml)
+//    Download face_landmarker.task from MediaPipe and place in assets/models/
+//    URL: https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task
+//    AndroidManifest.xml must have CAMERA permission (see android/app/src/main/AndroidManifest.xml)
 
 import 'dart:async';
 import 'dart:math' as math;
@@ -40,7 +39,7 @@ class ArScreen extends StatefulWidget {
 class _ArScreenState extends State<ArScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
 
-  // â”€â”€ Camera â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  //  Camera 
   CameraController? _cam;
   List<CameraDescription> _cameras = [];
   bool _camActive   = false;
@@ -48,13 +47,13 @@ class _ArScreenState extends State<ArScreen>
   bool _initializing = false;
   String? _camError;
 
-  // â”€â”€ MediaPipe â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  //  MediaPipe 
   final MediaPipeService _mp = MediaPipeService();
   ToothLandmarkData _landmarks = ToothLandmarkData.noFace();
   ToothLandmarkData _smoothedLandmarks = ToothLandmarkData.noFace();
   bool _mpReady = false;
 
-  // â”€â”€ AR state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  //  AR state 
   // We keep a repaint key around the full camera + overlay stack
   final GlobalKey _repaintKey = GlobalKey();
   Uint8List? _beforeBytes;
@@ -67,7 +66,7 @@ class _ArScreenState extends State<ArScreen>
   int _frameCount = 0;
   DateTime? _lastBackendToothScan;
 
-  // â”€â”€ Animation for "scanning" effect â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  //  Animation for "scanning" effect 
   late AnimationController _scanCtrl;
   late Animation<double>   _scanAnim;
   late AnimationController _pulseCtrl;
@@ -110,7 +109,7 @@ class _ArScreenState extends State<ArScreen>
     else if (state == AppLifecycleState.resumed && _camActive) _startCamera();
   }
 
-  // â”€â”€ MediaPipe init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  //  MediaPipe init 
   Future<void> _initMediaPipe() async {
     final ready = await _mp.initialize();
     if (mounted) setState(() => _mpReady = ready);
@@ -170,14 +169,14 @@ class _ArScreenState extends State<ArScreen>
     );
   }
 
-  // â”€â”€ Camera â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  //  Camera 
   Future<void> _startCamera() async {
     setState(() { _initializing = true; _camError = null; });
 
     final status = await Permission.camera.request();
     if (!status.isGranted) {
       setState(() {
-        _camError = 'Camera permission denied.\n\nGo to Settings â†’ Apps â†’ DentaLogic â†’ Permissions â†’ Camera.';
+        _camError = 'Camera permission denied.\n\nGo to Settings, Apps, DentaLogic, Permissions. Camera.';
         _initializing = false;
       });
       return;
@@ -397,7 +396,7 @@ class _ArScreenState extends State<ArScreen>
     return out;
   }
 
-  // â”€â”€ Snapshot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  //  Snapshot
   Future<void> _capture({required bool isBefore}) async {
     try {
       final boundary = _repaintKey.currentContext
@@ -415,7 +414,7 @@ class _ArScreenState extends State<ArScreen>
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(isBefore ? 'ðŸ“· Before captured' : 'âœ¨ After captured'),
+          content: Text(isBefore ? '· Before captured' : ' After captured'),
           backgroundColor: const Color(0xFF1A1A2A),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -433,7 +432,7 @@ class _ArScreenState extends State<ArScreen>
     return scan.teeth.length;
   }
 
-  // â”€â”€ Build â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  //  Build
   @override
   Widget build(BuildContext context) {
     final data = context.watch<AppData>();
@@ -446,7 +445,7 @@ class _ArScreenState extends State<ArScreen>
         fit: StackFit.expand,
         children: [
 
-          // â”€â”€ CAMERA + OVERLAY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          //  CAMERA + OVERLAY
           RepaintBoundary(
             key: _repaintKey,
             child: Stack(
@@ -496,7 +495,7 @@ class _ArScreenState extends State<ArScreen>
             ),
           ),
 
-          // â”€â”€ TOP HUD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          //  TOP HUD 
           Positioned(
             top: 0, left: 0, right: 0,
             child: _TopHud(
@@ -514,7 +513,7 @@ class _ArScreenState extends State<ArScreen>
             ),
           ),
 
-          // â”€â”€ BOTTOM CONTROL PANEL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          //  BOTTOM CONTROL PANEL
           Positioned(
             bottom: 0, left: 0, right: 0,
             child: _BottomPanel(
@@ -528,7 +527,7 @@ class _ArScreenState extends State<ArScreen>
               onSave: () {
                 data.saveArSession();
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('âœ… Saved to ${data.selectedPatient.name}\'s record'),
+                  content: Text(' Saved to ${data.selectedPatient.name}\'s record'),
                   backgroundColor: const Color(0xFF1A1A2A),
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -592,11 +591,9 @@ class _ArScreenState extends State<ArScreen>
   }
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // TEETH OVERLAY PAINTER
 // Paints AR overlays anchored to the MediaPipe landmark data.
 // When faceDetected == false, shows nothing.
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _TeethOverlayPainter extends CustomPainter {
   final AppData data;
   final ToothLandmarkData landmarks;
@@ -2047,9 +2044,7 @@ class _CameraWithOverlay extends StatelessWidget {
   }
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // IDLE / ERROR / LOADING STATE
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _IdleView extends StatelessWidget {
   final String? error;
   final bool loading;
@@ -2181,9 +2176,7 @@ class _IdleView extends StatelessWidget {
   }
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // TOP HUD
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _TopHud extends StatelessWidget {
   final bool isActive;
   final bool isFront;
@@ -2385,9 +2378,7 @@ class _HudBtn extends StatelessWidget {
   }
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // BOTTOM PANEL
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _BottomPanel extends StatefulWidget {
   final AppData data;
   final bool isActive;
@@ -2435,7 +2426,7 @@ class _BottomPanelState extends State<_BottomPanel> {
           mainAxisSize: MainAxisSize.min,
           children: [
 
-          // â”€â”€ Before/After strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          //  Before/After strip â””””””””””””””””””€
           if (widget.beforeBytes != null || widget.afterBytes != null) ...[
             _BeforeAfterStrip(
               before: widget.beforeBytes,
@@ -2444,19 +2435,19 @@ class _BottomPanelState extends State<_BottomPanel> {
             const SizedBox(height: 14),
           ],
 
-          // â”€â”€ Settings panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          //  Settings panel â””””””””””””””””””””””€
           if (_showSettings && widget.isActive) ...[
             _SettingsPanel(data: data),
             const SizedBox(height: 12),
           ],
 
-          // â”€â”€ Mode chips â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          //  Mode chips â””””””””””””””””””””””””””€
           if (widget.isActive) ...[
             _ModeChipRow(data: data),
             const SizedBox(height: 12),
           ],
 
-          // â”€â”€ Action row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          //  Action row â””””””””””””””””””””””””””€
           Row(
             children: [
               if (!widget.isActive) ...[
@@ -2498,7 +2489,7 @@ class _BottomPanelState extends State<_BottomPanel> {
             ],
           ),
 
-          // â”€â”€ Patient info â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          //  Patient info â””””””””””””””””””””””””€
           if (widget.isActive) ...[
             const SizedBox(height: 12),
             GestureDetector(
@@ -2549,9 +2540,7 @@ class _BottomPanelState extends State<_BottomPanel> {
   }
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // MODE CHIP ROW
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _ModeChipRow extends StatelessWidget {
   final AppData data;
   const _ModeChipRow({required this.data});
@@ -2603,9 +2592,7 @@ class _ModeChipRow extends StatelessWidget {
   }
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // SETTINGS PANEL
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 Future<void> showToothScanBackendUrlDialog(BuildContext context, AppData data) async {
   final controller = TextEditingController(text: data.toothScanEndpoint);
@@ -2848,9 +2835,7 @@ class _SliderRow extends StatelessWidget {
   }
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // BEFORE / AFTER STRIP
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _BeforeAfterStrip extends StatelessWidget {
   final Uint8List? before;
   final Uint8List? after;
@@ -2922,9 +2907,7 @@ class _SnapCard extends StatelessWidget {
   }
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // SHARED BUTTON WIDGETS
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _PrimaryBtn extends StatelessWidget {
   final String label;
   final IconData icon;
