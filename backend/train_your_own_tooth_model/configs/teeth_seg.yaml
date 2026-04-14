@@ -1,0 +1,8 @@
+path: ../datasets/teeth_seg
+train: images/train
+val: images/val
+
+names:
+  0: upper_teeth
+  1: lower_teeth
+
